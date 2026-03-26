@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLAR–AZOBA · Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f0f4f3;
+  --sidebar-bg: #0f2318;
+  --sidebar-accent: #16341f;
+  --sidebar-border: rgba(255,255,255,0.06);
+  --sidebar-text: #8aab8e;
+  --sidebar-text-active: #ffffff;
+  --topbar-bg: #ffffff;
+  --card-bg: #ffffff;
+  --border: #e2e8e4;
+  --green: #1a8f4e;
+  --green-light: #e8f5ee;
+  --green-mid: #2ecc71;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --blue: #2563eb;
+  --blue-light: #dbeafe;
+  --teal: #0d9488;
+  --teal-light: #ccfbf1;
+  --text: #1a2e22;
+  --text-mid: #4a6550;
+  --text-dim: #8aab8e;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --radius: 6px;
+  --sidebar-w: 170px;
+}
+
+html { font-size: 11px; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 200;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 22px; height: 22px;
+  background: linear-gradient(135deg, #2ecc71, #1a8f4e);
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(46,204,113,0.3);
+}
+
+.brand-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+.brand-name small {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--sidebar-text);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.sidebar-user {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-avatar {
+  width: 22px; height: 22px;
+  background: linear-gradient(135deg, #2d9b4e, #1a5c30);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.user-info { min-width: 0; }
+.user-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 11px; color: var(--sidebar-text); margin-top: 1px; display: flex; align-items: center; gap: 4px; }
+.online-dot { width: 6px; height: 6px; background: var(--green-mid); border-radius: 50%; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.sidebar-nav { flex: 1; padding: 8px 0; }
+.nav-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--sidebar-text);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 8px 12px 3px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  cursor: pointer;
+  color: var(--sidebar-text);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s;
+  position: relative;
+  border-radius: 0;
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--sidebar-text-active); }
+
+.nav-item.active {
+  background: rgba(46,204,113,0.12);
+  color: var(--green-mid);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--green-mid);
+  border-radius: 0 2px 2px 0;
+}
+
+.nav-icon { font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+
+.nav-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--green);
+  color: #fff;
+}
+
+.nav-badge.amber { background: var(--amber); }
+.nav-badge.red { background: var(--red); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--border);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.page-breadcrumb {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.page-breadcrumb span { color: var(--text); font-weight: 600; }
+
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+
+.clock-display {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-mid);
+  background: var(--bg);
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.live-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green);
+  background: var(--green-light);
+  border: 1px solid rgba(26,143,78,0.2);
+  padding: 5px 11px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.topbar-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.topbar-icon:hover { background: var(--green-light); }
+
+.topbar-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  width: 16px; height: 16px;
+  background: var(--red);
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #fff;
+}
+
+/* ── CONTENT ── */
+.content {
+  padding: 10px;
+  flex: 1;
+}
+
+/* ── TICKER ── */
+.ticker-bar {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+  padding: 5px 10px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.ticker-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--amber);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ticker-scroll { flex: 1; overflow: hidden; }
+.ticker-inner {
+  display: flex;
+  gap: 40px;
+  animation: ticker-anim 28s linear infinite;
+  white-space: nowrap;
+}
+@keyframes ticker-anim { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.ticker-item { font-size: 12px; color: var(--text-mid); }
+.ticker-item.good { color: var(--green); }
+.ticker-item.warn { color: var(--amber); }
+
+/* ── SECTION HEADER ── */
+.section-hdr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+  margin-top: 2px;
+}
+
+.section-hdr h3 {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+
+.section-hdr::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── STAT CARDS (top row) ── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: box-shadow 0.2s, transform 0.2s;
+  cursor: default;
+}
+
+.stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+.stat-icon {
+  width: 30px; height: 30px;
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.si-green { background: var(--green-light); }
+.si-amber { background: var(--amber-light); }
+.si-blue  { background: var(--blue-light); }
+.si-teal  { background: var(--teal-light); }
+
+.stat-body { min-width: 0; }
+.stat-label { font-size: 10px; color: var(--text-dim); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.stat-value { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 3px; }
+.stat-sub { font-size: 10px; font-weight: 500; }
+.sub-ok  { color: var(--green); }
+.sub-warn{ color: var(--amber); }
+.sub-err { color: var(--red); }
+
+/* ── SENSOR GRID ── */
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.sensor-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-top: 3px solid transparent;
+  padding: 7px 10px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+
+.sensor-card:hover { box-shadow: var(--shadow-md); }
+.sensor-card.ok   { border-top-color: var(--green); }
+.sensor-card.warn { border-top-color: var(--amber); }
+.sensor-card.err  { border-top-color: var(--red); }
+
+.sc-icon { font-size: 20px; margin-bottom: 8px; }
+.sc-label { font-size: 10px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.sc-value { font-family: var(--mono); font-size: 17px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.sc-sub   { font-size: 11px; font-weight: 500; }
+.sc-sub.ok   { color: var(--green); }
+.sc-sub.warn { color: var(--amber); }
+.sc-sub.err  { color: var(--red); }
+
+/* ── AZOLLA ROW ── */
+.azolla-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  box-shadow: var(--shadow);
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+.badge-green { background: var(--green-light); color: var(--green); }
+.badge-amber { background: var(--amber-light); color: var(--amber); }
+.badge-blue  { background: var(--blue-light);  color: var(--blue); }
+
+.azolla-pond {
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(180deg, #d4edda 0%, #b8dfc4 100%);
+  border-radius: 8px;
+  border: 1px solid #a8d5b5;
+  margin: 12px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.azolla-cover {
+  position: absolute;
+  top: 8px; left: 5%;
+  width: 80%;
+  height: 72px;
+  background: radial-gradient(ellipse at 40% 40%, #4caf7d 0%, #2d8c52 50%, #1a6b38 100%);
+  border-radius: 50% 55% 48% 52% / 45% 50% 55% 48%;
+  opacity: 0.92;
+  animation: float-azolla 4s ease-in-out infinite;
+}
+
+@keyframes float-azolla {
+  0%,100%{ transform: translateY(0) scaleX(1); }
+  50%{ transform: translateY(-3px) scaleX(1.02); }
+}
+
+.bar-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.bar-track { flex:1; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
+.bar-fill { height:100%; background: linear-gradient(90deg, #2d8c52, #2ecc71); border-radius: 3px; transition: width 1s ease; }
+.bar-val { font-family: var(--mono); font-size: 11px; color: var(--green); font-weight: 500; min-width: 34px; text-align: right; }
+
+.mini-stat { display: flex; flex-direction: column; justify-content: center; }
+.ms-label { font-size: 10px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+.ms-value { font-family: var(--mono); font-size: 18px; font-weight: 500; color: var(--text); line-height: 1; }
+.ms-detail { margin-top: 8px; }
+.ms-detail div { font-size: 11px; color: var(--text-dim); line-height: 1.9; }
+.ms-detail span { color: var(--text); font-weight: 500; }
+.ms-detail .ok { color: var(--green); }
+
+/* ── CHARTS ── */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* ── NOTIF ── */
+.notif-list { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; }
+.notif-list::-webkit-scrollbar { width: 4px; }
+.notif-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.notif-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.notif-item.ok   { border-color: var(--green); }
+.notif-item.warn { border-color: var(--amber); }
+.notif-item.err  { border-color: var(--red); }
+
+.notif-time { font-family: var(--mono); font-size: 10px; color: var(--text-dim); white-space: nowrap; padding-top: 1px; }
+.notif-msg  { color: var(--text-mid); }
+
+/* ── PREDICT ── */
+.predict-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 10px; }
+.predict-day {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 10px;
+  text-align: center;
+}
+.pd-label { font-size: 10px; color: var(--text-dim); font-weight: 600; margin-bottom: 5px; }
+.pd-val   { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--green); }
+.pd-sub   { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+/* ── EFF TABLE ── */
+.eff-table { width: 100%; border-collapse: collapse; }
+.eff-table th { font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; text-align: left; padding: 8px 4px; border-bottom: 2px solid var(--border); }
+.eff-table td { padding: 9px 4px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-mid); }
+.eff-table td:last-child { text-align: right; font-family: var(--mono); font-weight: 600; }
+.eff-table tr:last-child td { border-bottom: none; }
+
+
+/* ── NAV TABS ── */
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 5px;
+  width: fit-content;
+  box-shadow: var(--shadow);
+}
+
+.tab-btn {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.15s;
+  border: none;
+  background: transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tab-btn:hover:not(.active) { color: var(--text); background: var(--bg); }
+.tab-btn.active { background: var(--green); color: #fff; box-shadow: 0 2px 8px rgba(26,143,78,0.3); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
+  padding: 7px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-left: 0;
+}
+
+.export-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.export-btn:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+/* ── UPTIME ── */
+.uptime-big { font-family: var(--mono); font-size: 24px; font-weight: 600; color: var(--green); margin: 4px 0; }
+
+/* ── HAMBURGER BUTTON ── */
+.hamburger {
+  display: none;
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 8px;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.hamburger span {
+  display: block;
+  width: 16px; height: 2px;
+  background: var(--text-mid);
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+/* ── SIDEBAR OVERLAY ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 190;
+}
+.sidebar-overlay.active { display: block; }
+
+/* ── TABLET (≤1200px) ── */
+@media(max-width:1200px){
+  .stat-row      { grid-template-columns: repeat(2,1fr); }
+  .sensor-grid   { grid-template-columns: repeat(3,1fr); }
+  .azolla-row    { grid-template-columns: 1fr 1fr; }
+  .charts-grid   { grid-template-columns: 1fr; }
+  .bottom-grid   { grid-template-columns: 1fr; }
+  .fin-kpi-row   { grid-template-columns: repeat(3,1fr); }
+  .fin-grid      { grid-template-columns: 1fr; }
+}
+
+/* ── SMALL TABLET (≤900px) ── */
+@media(max-width:900px){
+  :root { --sidebar-w: 220px; }
+  .sensor-grid   { grid-template-columns: repeat(2,1fr); }
+  .azolla-row    { grid-template-columns: 1fr; }
+  .predict-grid  { grid-template-columns: repeat(2,1fr); }
+  .fin-kpi-row   { grid-template-columns: repeat(2,1fr); }
+  .tab-nav       { flex-wrap: wrap; width: 100%; }
+}
+
+/* ── MOBILE (≤768px) ── */
+@media(max-width:768px){
+  /* Sidebar hidden off-screen, toggleable */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    width: 260px;
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  /* Main takes full width */
+  .main { margin-left: 0; }
+
+  /* Show hamburger */
+  .hamburger { display: flex; }
+
+  /* Topbar adjustments */
+  .topbar { padding: 0 14px; gap: 8px; }
+  .topbar-left { gap: 8px; }
+  .page-breadcrumb { font-size: 12px; }
+  .clock-display { display: none; }
+
+  /* Content padding */
+  .content { padding: 14px; }
+
+  /* Ticker */
+  .ticker-bar { padding: 8px 12px; }
+
+  /* Grids */
+  .stat-row      { grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .sensor-grid   { grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .azolla-row    { grid-template-columns: 1fr; }
+  .charts-grid   { grid-template-columns: 1fr; }
+  .bottom-grid   { grid-template-columns: 1fr; }
+  .predict-grid  { grid-template-columns: repeat(2,1fr); }
+  .fin-kpi-row   { grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .fin-grid      { grid-template-columns: 1fr; }
+
+  /* Tab nav scrollable */
+  .tab-nav {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-btn { white-space: nowrap; padding: 5px 10px; font-size: 11px; }
+
+  /* Stat cards compact */
+  .stat-card { padding: 14px 14px; gap: 12px; }
+  .stat-icon { width: 40px; height: 40px; font-size: 18px; border-radius: 10px; }
+  .stat-value { font-size: 20px; }
+
+  /* Sensor cards */
+  .sensor-card { padding: 12px 12px; }
+  .sc-value { font-size: 15px; }
+
+  /* Finance */
+  .fin-intro { padding: 14px 16px; }
+  .fin-intro p { font-size: 12px; }
+
+  /* Footer */
+  footer { flex-direction: column; gap: 10px; text-align: center; padding: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">☀</div>
+    <div class="brand-name">
+      SOLAR–AZOBA
+      <small>Monitoring System</small>
+    </div>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="user-avatar">👤</div>
+    <div class="user-info">
+      <div class="user-name">Muhammad Azka Mubarok</div>
+      <div class="user-role"><span class="online-dot"></span> Online · Admin</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Navigasi Utama</div>
+
+    <button class="nav-item active" onclick="setNav(this,'realtime')">
+      <span class="nav-icon">📊</span> Dashboard
+    </button>
+    <button class="nav-item" onclick="setNav(this,'grafik')">
+      <span class="nav-icon">📈</span> Grafik & Analisis
+    </button>
+    <button class="nav-item" onclick="setNav(this,'prediksi')">
+      <span class="nav-icon">🔮</span> Prediksi
+    </button>
+
+
+    <div class="nav-label">Sistem</div>
+
+    <button class="nav-item" onclick="setNav(this,'riwayat')">
+      <span class="nav-icon">🔔</span> Notifikasi
+      <span class="nav-badge amber">3</span>
+    </button>
+
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="page-breadcrumb">Dashboard &rsaquo; <span id="page-title">Real-Time Monitor</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="clock-display" id="clock">--:--:--</div>
+      <div class="live-pill"><span class="online-dot"></span> LIVE</div>
+      <div class="topbar-icon">🔔<div class="topbar-badge">3</div></div>
+      <div class="topbar-icon">📬</div>
+      <div class="topbar-icon">⚙️</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- TICKER -->
+    <div class="ticker-bar">
+      <div class="ticker-label">⚠ Status</div>
+      <div class="ticker-scroll">
+        <div class="ticker-inner" id="ticker-inner"></div>
+      </div>
+    </div>
+
+    <!-- TAB REAL-TIME -->
+    <div id="tab-realtime">
+      <!-- KPI STAT ROW -->
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon si-green">🌿</div>
+          <div class="stat-body">
+            <div class="stat-label">Pertumbuhan Azolla</div>
+            <div class="stat-value" id="growth-val">+12.4%</div>
+            <div class="stat-sub sub-ok">▲ Di atas target literatur</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon si-amber">☀</div>
+          <div class="stat-body">
+            <div class="stat-label">Energi Diproduksi</div>
+            <div class="stat-value" id="energy-val">1.42 kWh</div>
+            <div class="stat-sub sub-ok">▲ Output optimal hari ini</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon si-blue">🪣</div>
+          <div class="stat-body">
+            <div class="stat-label">Volume Tangki</div>
+            <div class="stat-value" id="tank-val">156 L</div>
+            <div class="stat-sub sub-ok">▲ 78% kapasitas tersedia</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon si-teal">💧</div>
+          <div class="stat-body">
+            <div class="stat-label">Turbidity Air</div>
+            <div class="stat-value" id="turb-val">142 NTU</div>
+            <div class="stat-sub sub-warn">⚠ Sedikit di atas normal</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-hdr"><h3>Status Sensor & Alat</h3></div>
+      <div class="sensor-grid">
+        <div class="sensor-card ok">
+          <div class="sc-icon">⚡</div>
+          <div class="sc-label">Pompa Utama</div>
+          <div class="sc-value">ON</div>
+          <div class="sc-sub ok">2.4 A · 12.1 V</div>
+        </div>
+        <div class="sensor-card ok">
+          <div class="sc-icon">☀</div>
+          <div class="sc-label">Panel Surya</div>
+          <div class="sc-value" id="solar-v">18.4V</div>
+          <div class="sc-sub ok">3.2 A · 58.9 W</div>
+        </div>
+        <div class="sensor-card warn">
+          <div class="sc-icon">💧</div>
+          <div class="sc-label">Turbidity</div>
+          <div class="sc-value" id="turbidity">142 NTU</div>
+          <div class="sc-sub warn">⚠ Sedikit Keruh</div>
+        </div>
+        <div class="sensor-card ok">
+          <div class="sc-icon">🌡</div>
+          <div class="sc-label">pH Air</div>
+          <div class="sc-value" id="ph-val">6.8</div>
+          <div class="sc-sub ok">Optimal (6.5–7.5)</div>
+        </div>
+        <div class="sensor-card ok">
+          <div class="sc-icon">🌊</div>
+          <div class="sc-label">Pompa Hidram</div>
+          <div class="sc-value">ON</div>
+          <div class="sc-sub ok">4.8 L/min</div>
+        </div>
+        <div class="sensor-card ok">
+          <div class="sc-icon">🔋</div>
+          <div class="sc-label">Baterai Aki</div>
+          <div class="sc-value">87%</div>
+          <div class="sc-sub ok">12.6 V · Pengisian</div>
+        </div>
+        <div class="sensor-card ok">
+          <div class="sc-icon">🌧</div>
+          <div class="sc-label">Presipitasi</div>
+          <div class="sc-value">34 L</div>
+          <div class="sc-sub ok">Terkumpul hari ini</div>
+        </div>
+        <div class="sensor-card ok">
+          <div class="sc-icon">🌡</div>
+          <div class="sc-label">Suhu Udara</div>
+          <div class="sc-value">29°C</div>
+          <div class="sc-sub ok">Optimal Azolla</div>
+        </div>
+        <div class="sensor-card ok">
+          <div class="sc-icon">☁</div>
+          <div class="sc-label">Kelembapan</div>
+          <div class="sc-value">78%</div>
+          <div class="sc-sub ok">Normal</div>
+        </div>
+        <div class="sensor-card ok">
+          <div class="sc-icon">🪣</div>
+          <div class="sc-label">Tangki Air</div>
+          <div class="sc-value" id="tank-level">78%</div>
+          <div class="sc-sub ok">156 L tersedia</div>
+        </div>
+      </div>
+
+      <div class="section-hdr"><h3>Kondisi Kolam Azolla</h3></div>
+      <div class="azolla-row">
+        <div class="card">
+          <div class="card-title">
+            Visualisasi Kolam
+            <span class="card-badge badge-green">● KAMERA AKTIF</span>
+          </div>
+          <div class="azolla-pond">
+            <div class="azolla-cover" id="azolla-cover" style="width:80%"></div>
+          </div>
+          <div class="bar-row">
+            <span style="font-size:11px;color:var(--text-dim);white-space:nowrap">Penutupan Kolam</span>
+            <div class="bar-track"><div class="bar-fill" id="coverage-bar" style="width:82%"></div></div>
+            <span class="bar-val" id="coverage-pct">82%</span>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-dim)">
+            Distribusi: <strong style="color:var(--green)">Merata</strong> &nbsp;·&nbsp;
+            Luas tercover: <strong style="color:var(--text)">4.1 m²</strong> dari 5.0 m² total
+          </div>
+        </div>
+        <div class="card mini-stat">
+          <div class="ms-label">Warna Daun</div>
+          <div class="ms-value" style="font-size:16px;display:flex;align-items:center;gap:8px">
+            <span style="width:14px;height:14px;background:#2d9b4e;border-radius:3px;display:inline-block;flex-shrink:0"></span>
+            Hijau Segar
+          </div>
+          <div class="ms-detail" style="margin-top:10px">
+            <div>RGB avg: <span style="font-family:var(--mono)">45/158/78</span></div>
+            <div>Status: <span class="ok">Sehat & Optimal</span></div>
+            <div>Nutrisi: <span class="ok">Cukup</span></div>
+          </div>
+        </div>
+        <div class="card mini-stat">
+          <div class="ms-label">Pertumbuhan Harian</div>
+          <div class="ms-value" style="color:var(--green)">+12.4%</div>
+          <div class="ms-detail" style="margin-top:8px">
+            <div>Target lit.: <span style="font-family:var(--mono)">10–15%/hari</span></div>
+            <div>Biomassa: <span>2.1 kg/m²</span></div>
+            <div>Trend 7 hari: <span class="ok">↑ Positif</span></div>
+          </div>
+        </div>
+        <div class="card mini-stat">
+          <div class="ms-label">Efisiensi Air</div>
+          <div class="ms-value" style="color:var(--blue)">71%</div>
+          <div class="ms-detail" style="margin-top:8px">
+            <div>Terpakai: <span style="font-family:var(--mono)">110 L</span></div>
+            <div>Tersedia: <span style="font-family:var(--mono)">156 L</span></div>
+            <div>Status: <span class="ok">Efisien</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB GRAFIK -->
+    <div id="tab-grafik" style="display:none">
+      <div class="section-hdr"><h3>Grafik & Analisis Data</h3></div>
+      <div class="charts-grid">
+        <div class="card">
+          <div class="card-title">
+            Pertumbuhan Azolla vs Target Literatur
+            <span class="card-badge badge-green">7 Hari</span>
+          </div>
+          <canvas id="growthChart" height="140"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">Distribusi Energi Surya</div>
+          <div style="max-width:220px;margin:0 auto;">
+            <canvas id="energyDonut"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-grid">
+        <div class="card">
+          <div class="card-title">Kualitas Air (Turbidity & pH)</div>
+          <canvas id="waterChart" height="140"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">Output Panel Surya (Watt)</div>
+          <canvas id="solarChart" height="140"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">Efisiensi Penggunaan Air (%)</div>
+          <canvas id="waterEffChart" height="140"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB PREDIKSI -->
+    <div id="tab-prediksi" style="display:none">
+      <div class="section-hdr"><h3>Prediksi 7 Hari ke Depan</h3></div>
+      <div class="bottom-grid">
+        <div class="card">
+          <div class="card-title">Prediksi Penutupan Kolam</div>
+          <div class="predict-grid">
+            <div class="predict-day"><div class="pd-label">H+1</div><div class="pd-val">85%</div><div class="pd-sub">Penutupan</div></div>
+            <div class="predict-day"><div class="pd-label">H+2</div><div class="pd-val">88%</div><div class="pd-sub">Penutupan</div></div>
+            <div class="predict-day"><div class="pd-label">H+3</div><div class="pd-val">90%</div><div class="pd-sub">Penutupan</div></div>
+            <div class="predict-day"><div class="pd-label">H+4–7</div><div class="pd-val">~92%</div><div class="pd-sub">Est. panen</div></div>
+          </div>
+          <div style="margin-top:14px;font-size:12px;color:var(--text-dim)">
+            Estimasi panen: <strong style="color:var(--green)">4–5 hari lagi</strong> · Biomassa proyeksi: <strong>2.5 kg/m²</strong>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Prediksi Kebutuhan Air (L/hari)</div>
+          <canvas id="predictWaterChart" height="140"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">Prediksi Suplai Energi Surya</div>
+          <canvas id="predictSolarChart" height="140"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB RIWAYAT -->
+    <div id="tab-riwayat" style="display:none">
+      <div class="section-hdr"><h3>Riwayat Notifikasi</h3></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
+        <div class="card">
+          <div class="card-title">Log Notifikasi</div>
+          <div class="notif-list" id="notif-list"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-title">Ringkasan Kejadian</div>
+            <table class="eff-table">
+              <thead><tr><th>Tipe</th><th>7 Hari</th></tr></thead>
+              <tbody>
+                <tr><td>⚠ Peringatan</td><td style="color:var(--amber)">8</td></tr>
+                <tr><td>🔴 Gangguan</td><td style="color:var(--red)">2</td></tr>
+                <tr><td>✅ Pemulihan</td><td style="color:var(--green)">9</td></tr>
+                <tr><td>ℹ Info</td><td style="color:var(--blue)">24</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card" style="text-align:center">
+            <div class="card-title" style="justify-content:center">Uptime Sistem</div>
+            <div class="uptime-big">99.2%</div>
+            <div style="font-size:11px;color:var(--text-dim)">7 hari terakhir · Downtime: 1.3 jam</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div><!-- /content -->
+
+  <footer>
+    <span>SOLAR–AZOBA MONITORING SYS · ESP32 + Arduino · v1.2.0 · Prototipe Sistem Budidaya Azolla</span>
+    <div style="display:flex;gap:8px">
+      <button class="export-btn" onclick="alert('Export CSV dimulai...')">↓ CSV</button>
+      <button class="export-btn" onclick="alert('Export PDF dimulai...')">↓ PDF</button>
+    </div>
+  </footer>
+
+</div><!-- /main -->
+
+<script>
+// SIDEBAR TOGGLE (mobile)
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('active');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('active');
+}
+// Close sidebar on nav item click (mobile)
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+});
+
+// CLOCK
+function tick() {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('id-ID',{hour12:false});
+}
+setInterval(tick,1000); tick();
+
+// TICKER
+const tickerItems = [
+  {msg:'⚠ Turbidity air = 142 NTU (sedikit di atas normal)', cls:'warn'},
+  {msg:'✓ Panel surya: output optimal · 58.9 W', cls:'good'},
+  {msg:'✓ Azolla: pertumbuhan +12.4% hari ini', cls:'good'},
+  {msg:'⚠ Pompa hidram: debit sedikit turun (4.8 L/min)', cls:'warn'},
+  {msg:'✓ pH air: 6.8 (optimal)', cls:'good'},
+  {msg:'✓ Tangki air: 78% kapasitas', cls:'good'},
+];
+const ti = document.getElementById('ticker-inner');
+const full = [...tickerItems,...tickerItems].map(t=>`<span class="ticker-item ${t.cls}">${t.msg}</span>`).join('');
+ti.innerHTML = full;
+
+// NOTIFICATIONS
+const notifs = [
+  {t:'10:42',m:'Turbidity naik ke 142 NTU, pantau kondisi air',cls:'warn'},
+  {t:'10:15',m:'Pertumbuhan Azolla hari ini: +12.4% — melampaui target',cls:'ok'},
+  {t:'09:58',m:'Panel surya mencapai output puncak: 61.2 W',cls:'ok'},
+  {t:'09:30',m:'Pompa hidram: debit turun ke 4.8 L/min dari 5.2 L/min',cls:'warn'},
+  {t:'08:47',m:'Sistem aktif, semua sensor terhubung',cls:'ok'},
+  {t:'Kmrn 17:20',m:'Pompa utama sempat mati 3 menit (pemulihan otomatis)',cls:'err'},
+  {t:'Kmrn 14:00',m:'Pengisian tangki dari sumber sungai selesai (200 L)',cls:'ok'},
+  {t:'Kmrn 11:30',m:'Warna daun Azolla terdeteksi menguning sebagian',cls:'warn'},
+  {t:'Kmrn 09:00',m:'Kalibrasi sensor pH selesai — pembacaan akurat',cls:'ok'},
+];
+document.getElementById('notif-list').innerHTML = notifs.map(n=>`
+  <div class="notif-item ${n.cls}">
+    <div class="notif-time">${n.t}</div>
+    <div class="notif-msg">${n.m}</div>
+  </div>`).join('');
+
+// LIVE DATA
+function rnd(a,b,d=1){ return (Math.random()*(b-a)+a).toFixed(d); }
+setInterval(()=>{
+  document.getElementById('tank-level').textContent = rnd(74,82,0)+'%';
+  document.getElementById('tank-val').textContent    = rnd(148,164,0)+' L';
+  document.getElementById('solar-v').textContent     = rnd(17.2,19.4)+'V';
+  document.getElementById('turbidity').textContent   = rnd(130,155,0)+' NTU';
+  document.getElementById('turb-val').textContent    = rnd(130,155,0)+' NTU';
+  document.getElementById('ph-val').textContent      = rnd(6.6,7.1);
+  document.getElementById('energy-val').textContent  = rnd(1.35,1.60)+' kWh';
+  const cov = parseInt(rnd(80,85,0));
+  document.getElementById('coverage-pct').textContent = cov+'%';
+  document.getElementById('coverage-bar').style.width  = cov+'%';
+  document.getElementById('azolla-cover').style.width  = (cov-10)+'%';
+},3000);
+
+// TAB SWITCHING
+const pageTitles = {
+  realtime:'Real-Time Monitor', grafik:'Grafik & Analisis',
+  prediksi:'Prediksi', riwayat:'Notifikasi'
+};
+
+function setNav(btn, id) {
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  switchTab(id);
+}
+
+function switchTab(id) {
+  ['realtime','grafik','prediksi','riwayat'].forEach(t => {
+    const el = document.getElementById('tab-'+t);
+    if(el) el.style.display = t===id ? 'block' : 'none';
+  });
+  document.getElementById('page-title').textContent = pageTitles[id] || id;
+  if(id==='grafik')    setTimeout(initCharts, 50);
+  if(id==='prediksi')  setTimeout(initPredictCharts, 50);
+}
+
+// CHART DEFAULTS
+Chart.defaults.color = '#8aab8e';
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size = 11;
+
+const gridColor = '#e2e8e4';
+
+let chartsInited = false;
+function initCharts(){
+  if(chartsInited) return; chartsInited = true;
+  const days = ['Sel','Rab','Kam','Jum','Sab','Min','Sen'];
+
+  new Chart(document.getElementById('growthChart'),{
+    type:'line',
+    data:{
+      labels:days,
+      datasets:[
+        {label:'Aktual (%/hari)',data:[8.2,9.5,11.1,10.8,12.4,12.0,12.4],borderColor:'#1a8f4e',backgroundColor:'rgba(26,143,78,0.08)',tension:0.4,fill:true,pointBackgroundColor:'#1a8f4e',pointRadius:4},
+        {label:'Target Min (10%)',data:[10,10,10,10,10,10,10],borderColor:'#2563eb',borderDash:[6,4],tension:0,pointRadius:0},
+        {label:'Target Max (15%)',data:[15,15,15,15,15,15,15],borderColor:'rgba(37,99,235,0.3)',borderDash:[3,4],tension:0,pointRadius:0}
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{labels:{color:'#4a6550',boxWidth:12}}},scales:{x:{grid:{color:gridColor},ticks:{color:'#8aab8e'}},y:{grid:{color:gridColor},ticks:{color:'#8aab8e'},min:0,max:18}}}
+  });
+
+  new Chart(document.getElementById('energyDonut'),{
+    type:'doughnut',
+    data:{
+      labels:['Pompa Utama','Sensor & MCU','Pompa Hidram','Tersisa'],
+      datasets:[{data:[38,12,22,28],backgroundColor:['#1a8f4e','#2563eb','#d97706','#e2e8e4'],borderColor:'#fff',borderWidth:3}]
+    },
+    options:{responsive:true,cutout:'65%',plugins:{legend:{position:'right',labels:{color:'#4a6550',boxWidth:12,padding:10}}}}
+  });
+
+  new Chart(document.getElementById('waterChart'),{
+    type:'bar',
+    data:{
+      labels:days,
+      datasets:[
+        {label:'Turbidity (NTU)',data:[110,125,118,130,142,138,142],backgroundColor:'rgba(37,99,235,0.55)',borderRadius:4},
+        {label:'pH (×10)',data:[68,70,69,68,68,67,68],backgroundColor:'rgba(26,143,78,0.45)',borderRadius:4}
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{labels:{color:'#4a6550',boxWidth:10}}},scales:{x:{grid:{color:gridColor},ticks:{color:'#8aab8e'}},y:{grid:{color:gridColor},ticks:{color:'#8aab8e'}}}}
+  });
+
+  new Chart(document.getElementById('solarChart'),{
+    type:'line',
+    data:{
+      labels:['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'],
+      datasets:[{label:'Output (W)',data:[5,18,35,48,56,61,58,52,42,28,8],borderColor:'#d97706',backgroundColor:'rgba(217,119,6,0.08)',fill:true,tension:0.4,pointBackgroundColor:'#d97706',pointRadius:3}]
+    },
+    options:{responsive:true,plugins:{legend:{labels:{color:'#4a6550',boxWidth:12}}},scales:{x:{grid:{color:gridColor},ticks:{color:'#8aab8e'}},y:{grid:{color:gridColor},ticks:{color:'#8aab8e'},min:0,max:70}}}
+  });
+
+  new Chart(document.getElementById('waterEffChart'),{
+    type:'line',
+    data:{
+      labels:days,
+      datasets:[{label:'Efisiensi Air (%)',data:[68,72,70,69,71,73,71],borderColor:'#0d9488',backgroundColor:'rgba(13,148,136,0.08)',fill:true,tension:0.4,pointBackgroundColor:'#0d9488',pointRadius:4}]
+    },
+    options:{responsive:true,plugins:{legend:{labels:{color:'#4a6550',boxWidth:12}}},scales:{x:{grid:{color:gridColor},ticks:{color:'#8aab8e'}},y:{grid:{color:gridColor},ticks:{color:'#8aab8e'},min:60,max:80}}}
+  });
+}
+
+let predictInited = false;
+function initPredictCharts(){
+  if(predictInited) return; predictInited = true;
+  const days = ['H+1','H+2','H+3','H+4','H+5','H+6','H+7'];
+
+  new Chart(document.getElementById('predictWaterChart'),{
+    type:'bar',
+    data:{labels:days,datasets:[{label:'Kebutuhan Air (L)',data:[115,118,120,122,125,120,118],backgroundColor:'rgba(37,99,235,0.5)',borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#4a6550',boxWidth:12}}},scales:{x:{grid:{color:gridColor},ticks:{color:'#8aab8e'}},y:{grid:{color:gridColor},ticks:{color:'#8aab8e'}}}}
+  });
+
+  new Chart(document.getElementById('predictSolarChart'),{
+    type:'line',
+    data:{labels:days,datasets:[{label:'Suplai (Wh)',data:[1380,1420,1350,1480,1460,1390,1410],borderColor:'#d97706',backgroundColor:'rgba(217,119,6,0.08)',fill:true,tension:0.4,pointBackgroundColor:'#d97706',pointRadius:4}]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#4a6550',boxWidth:12}}},scales:{x:{grid:{color:gridColor},ticks:{color:'#8aab8e'}},y:{grid:{color:gridColor},ticks:{color:'#8aab8e'}}}}
+  });
+}
+
+</script>
+</body>
+</html>
